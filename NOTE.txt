@@ -1,0 +1,1 @@
+Este ZIP incluye la carpeta src/ para copiar en un proyecto Angular 17 generado con Angular CLI.
