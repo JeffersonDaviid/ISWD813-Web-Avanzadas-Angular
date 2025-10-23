@@ -1,0 +1,25 @@
+<div class="clientes">
+  <h2>Gestión de Clientes</h2>
+
+  <form (ngSubmit)="guardar()" class="form">
+    <input [(ngModel)]="nuevo.nombre" name="nombre" placeholder="Nombre" required>
+    <input [(ngModel)]="nuevo.correo" name="correo" placeholder="Correo" required>
+    <button type="submit">{{ editando ? 'Actualizar' : 'Agregar' }}</button>
+    <button type="button" (click)="cancelar()" *ngIf="editando">Cancelar</button>
+  </form>
+
+  <div *ngIf="cargando">Cargando clientes...</div>
+
+  <table *ngIf="!cargando" border="1" width="100%">
+    <tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Acciones</th></tr>
+    <tr *ngFor="let c of clientes">
+      <td>{{ c.id }}</td>
+      <td>{{ c.nombre }}</td>
+      <td>{{ c.correo }}</td>
+      <td>
+        <button (click)="editar(c)">Editar</button>
+        <button (click)="eliminar(c.id)">Eliminar</button>
+      </td>
+    </tr>
+  </table>
+</div>
