@@ -1,0 +1,10 @@
+<div class="login-box">
+  <h2>Iniciar sesión</h2>
+  <div class="form">
+    <input [(ngModel)]="usuario" placeholder="Usuario" />
+    <input [(ngModel)]="password" type="password" placeholder="Contraseña" />
+    <button (click)="ingresar()">Entrar</button>
+    <p class="error" *ngIf="error">{{ error }}</p>
+    <p class="hint">Usuario demo: <strong>admin</strong> / Contraseña: <strong>1234</strong></p>
+  </div>
+</div>
