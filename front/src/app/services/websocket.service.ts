@@ -6,6 +6,7 @@ import { retryWhen, delayWhen, tap } from 'rxjs/operators'
 
 export interface WSMessage {
 	type?: string
+	messageType?: string
 	payload?: any
 }
 
