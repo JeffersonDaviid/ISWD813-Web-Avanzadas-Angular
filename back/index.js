@@ -1,17 +1,61 @@
 // server-ws.js
 const WebSocket = require('ws')
 
+// Estadísticas del servidor
+let stats = {
+	messagesCount: 0,
+	activeConnections: 0,
+	totalConnections: 0,
+}
+
 const wss = new WebSocket.Server({ port: 8080 }, () => {
 	console.log('WebSocket server listening on ws://localhost:8080')
 })
 
+// Función para enviar estadísticas a todos los clientes
+function broadcastStats() {
+	const statsMessage = JSON.stringify({
+		type: 'stats',
+		payload: {
+			messagesCount: stats.messagesCount,
+			activeConnections: stats.activeConnections,
+			totalConnections: stats.totalConnections,
+		},
+	})
+
+	wss.clients.forEach((client) => {
+		if (client.readyState === WebSocket.OPEN) {
+			client.send(statsMessage)
+		}
+	})
+}
+
 wss.on('connection', (ws, req) => {
 	console.log('Client connected')
+
+	// Actualizar estadísticas de conexión
+	stats.activeConnections++
+	stats.totalConnections++
 
 	// send welcome
 	ws.send(
 		JSON.stringify({ type: 'system', payload: { message: 'Bienvenido al WS de prueba' } })
 	)
+
+	// Enviar estadísticas iniciales al cliente recién conectado
+	ws.send(
+		JSON.stringify({
+			type: 'stats',
+			payload: {
+				messagesCount: stats.messagesCount,
+				activeConnections: stats.activeConnections,
+				totalConnections: stats.totalConnections,
+			},
+		})
+	)
+
+	// Broadcast estadísticas actualizadas a todos los clientes
+	broadcastStats()
 
 	ws.on('message', (raw) => {
 		console.log('Received message from client')
@@ -21,6 +65,9 @@ wss.on('connection', (ws, req) => {
 		} catch (e) {
 			msg = { type: 'text', payload: raw.toString() }
 		}
+
+		// Incrementar contador de mensajes
+		stats.messagesCount++
 
 		// Determine broadcast structure based on message type
 		let broadcast
@@ -67,10 +114,19 @@ wss.on('connection', (ws, req) => {
 				client.send(broadcast)
 			}
 		})
+
+		// Enviar estadísticas actualizadas después de cada mensaje
+		broadcastStats()
 	})
 
 	ws.on('close', () => {
 		console.log('Client disconnected')
+
+		// Decrementar conexiones activas cuando se desconecta un cliente
+		stats.activeConnections = Math.max(0, stats.activeConnections - 1)
+
+		// Broadcast estadísticas actualizadas
+		broadcastStats()
 	})
 
 	ws.on('error', (err) => {

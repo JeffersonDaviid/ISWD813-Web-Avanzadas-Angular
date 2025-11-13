@@ -10,6 +10,12 @@ export interface WSMessage {
 	payload?: any
 }
 
+export interface WSStats {
+	messagesCount: number
+	activeConnections: number
+	totalConnections: number
+}
+
 @Injectable({
 	providedIn: 'root',
 })
@@ -18,6 +24,7 @@ export class WebsocketService implements OnDestroy {
 	private socket$?: WebSocketSubject<WSMessage>
 	private connectionStatus$ = new Subject<boolean>()
 	private incoming$ = new Subject<WSMessage>()
+	private stats$ = new Subject<WSStats>()
 	private reconnectInterval = 3000
 	private manualClose = false
 	private sub?: Subscription
@@ -28,6 +35,10 @@ export class WebsocketService implements OnDestroy {
 
 	public status$(): Observable<boolean> {
 		return this.connectionStatus$.asObservable()
+	}
+
+	public getStats$(): Observable<WSStats> {
+		return this.stats$.asObservable()
 	}
 
 	constructor() {
@@ -67,7 +78,12 @@ export class WebsocketService implements OnDestroy {
 			)
 			.subscribe(
 				(msg) => {
-					this.incoming$.next(msg)
+					// Manejar mensajes de estadísticas por separado
+					if (msg.type === 'stats') {
+						this.stats$.next(msg.payload as WSStats)
+					} else {
+						this.incoming$.next(msg)
+					}
 				},
 				(err) => {
 					console.error('[WS] subscription error', err)
@@ -108,5 +124,6 @@ export class WebsocketService implements OnDestroy {
 		this.close()
 		this.incoming$.complete()
 		this.connectionStatus$.complete()
+		this.stats$.complete()
 	}
 }

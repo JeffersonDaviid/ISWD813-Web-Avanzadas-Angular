@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
-import { WebsocketService, WSMessage } from '../../services/websocket.service'
+import { WebsocketService, WSMessage, WSStats } from '../../services/websocket.service'
 import { Subscription } from 'rxjs'
 
 @Component({
@@ -10,13 +10,52 @@ import { Subscription } from 'rxjs'
 			<div
 				class="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center shadow-sm flex-shrink-0">
 				<h2 class="text-lg sm:text-xl font-semibold text-gray-900">WebSocket Chat</h2>
-				<div class="flex items-center gap-2">
+				<div class="flex items-center gap-4">
+					<button
+						(click)="toggleStats()"
+						class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-medium transition-colors">
+						{{ showStats ? 'Ocultar' : 'Mostrar' }} Estadísticas
+					</button>
+					<div class="flex items-center gap-2">
+						<div
+							class="w-2 h-2 rounded-full transition-colors"
+							[ngClass]="connected ? 'bg-green-500' : 'bg-red-500'"></div>
+						<span class="text-sm text-gray-600">{{
+							connected ? 'Conectado' : 'Desconectado'
+						}}</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Estadísticas Section -->
+			<div
+				*ngIf="showStats"
+				class="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200 px-4 sm:px-6 py-4 flex-shrink-0">
+				<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 					<div
-						class="w-2 h-2 rounded-full transition-colors"
-						[ngClass]="connected ? 'bg-green-500' : 'bg-red-500'"></div>
-					<span class="text-sm text-gray-600">{{
-						connected ? 'Conectado' : 'Desconectado'
-					}}</span>
+						class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 text-center">
+						<div class="text-2xl font-bold text-blue-600 mb-1">
+							{{ stats.messagesCount }}
+						</div>
+						<div class="text-sm text-gray-600">Mensajes Enviados</div>
+						<div class="text-xs text-gray-500 mt-1">📤 Total de mensajes</div>
+					</div>
+					<div
+						class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 text-center">
+						<div class="text-2xl font-bold text-green-600 mb-1">
+							{{ stats.activeConnections }}
+						</div>
+						<div class="text-sm text-gray-600">Personas Conectadas</div>
+						<div class="text-xs text-gray-500 mt-1">🟢 Actualmente en línea</div>
+					</div>
+					<div
+						class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 text-center">
+						<div class="text-2xl font-bold text-purple-600 mb-1">
+							{{ stats.totalConnections }}
+						</div>
+						<div class="text-sm text-gray-600">Total de Conexiones</div>
+						<div class="text-xs text-gray-500 mt-1">👥 Histórico total</div>
+					</div>
 				</div>
 			</div>
 
@@ -351,8 +390,18 @@ export class WsDemoComponent implements OnInit, OnDestroy {
 	modalVideoName: string = ''
 	modalAudioUrl: string = ''
 	modalAudioName: string = ''
+
+	// Estadísticas
+	stats: WSStats = {
+		messagesCount: 0,
+		activeConnections: 0,
+		totalConnections: 0,
+	}
+	showStats = true
+
 	private subMsg?: Subscription
 	private subStatus?: Subscription
+	private subStats?: Subscription
 
 	constructor(private ws: WebsocketService) {}
 
@@ -366,6 +415,10 @@ export class WsDemoComponent implements OnInit, OnDestroy {
 
 		this.subStatus = this.ws.status$().subscribe((state) => {
 			this.connected = state
+		})
+
+		this.subStats = this.ws.getStats$().subscribe((stats) => {
+			this.stats = stats
 		})
 	}
 
@@ -653,8 +706,13 @@ export class WsDemoComponent implements OnInit, OnDestroy {
 	trackByIndex(index: number, item: WSMessage): number {
 		return index
 	}
+
+	toggleStats() {
+		this.showStats = !this.showStats
+	}
 	ngOnDestroy(): void {
 		if (this.subMsg) this.subMsg.unsubscribe()
 		if (this.subStatus) this.subStatus.unsubscribe()
+		if (this.subStats) this.subStats.unsubscribe()
 	}
 }
