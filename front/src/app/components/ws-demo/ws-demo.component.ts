@@ -5,112 +5,45 @@ import { Subscription } from 'rxjs'
 @Component({
 	selector: 'app-ws-demo',
 	template: `
-		<div class="chat-container">
+		<div class="h-screen max-w-4xl mx-auto flex flex-col bg-white shadow-xl">
 			<!-- Header -->
-			<div class="header">
-				<h2 class="title">WebSocket Chat</h2>
-				<div class="status">
-					<span
-						class="status-dot"
-						[class.connected]="connected"
-						[class.disconnected]="!connected"></span>
-					<span class="status-text">{{ connected ? 'Conectado' : 'Desconectado' }}</span>
-				</div>
-			</div>
-
-			<!-- Input Section -->
-			<div class="input-section">
-				<!-- Text Message Input -->
-				<div class="message-input-container">
-					<input
-						[(ngModel)]="outMsg"
-						placeholder="Escribe tu mensaje..."
-						class="message-input"
-						(keydown.enter)="send()" />
-					<button
-						(click)="send()"
-						class="send-button"
-						[disabled]="!outMsg.trim()">
-						<span class="send-icon">→</span>
-					</button>
-				</div>
-
-				<!-- File Input -->
-				<div class="file-input-container">
-					<input
-						type="file"
-						#fileInput
-						(change)="onFileSelected($event)"
-						class="file-input"
-						id="file-input" />
-					<label
-						for="file-input"
-						class="file-input-label">
-						<span class="file-icon">📎</span>
-						<span>Adjuntar archivo</span>
-					</label>
-					<button
-						*ngIf="selectedFile"
-						(click)="sendFile()"
-						class="send-file-button">
-						Enviar archivo
-					</button>
-				</div>
-
-				<!-- File Preview -->
-				<div
-					*ngIf="selectedFile"
-					class="file-preview">
-					<div class="file-preview-content">
-						<div class="file-preview-icon">
-							<div
-								*ngIf="isImage(selectedFile.type); else fileIconTemplate"
-								class="preview-image">
-								<img
-									[src]="getSelectedFilePreview()"
-									[alt]="selectedFile.name" />
-							</div>
-							<ng-template #fileIconTemplate>
-								<span class="file-type-icon">{{ getFileIcon(selectedFile.type) }}</span>
-							</ng-template>
-						</div>
-						<div class="file-preview-info">
-							<div class="file-name">{{ selectedFile.name }}</div>
-							<div class="file-details">
-								{{ formatFileSize(selectedFile.size) }} •
-								{{ getFileTypeDisplay(selectedFile.type) }}
-							</div>
-						</div>
-						<button
-							(click)="clearSelectedFile()"
-							class="clear-file-button">
-							×
-						</button>
-					</div>
+			<div
+				class="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center shadow-sm flex-shrink-0">
+				<h2 class="text-lg sm:text-xl font-semibold text-gray-900">WebSocket Chat</h2>
+				<div class="flex items-center gap-2">
+					<div
+						class="w-2 h-2 rounded-full transition-colors"
+						[ngClass]="connected ? 'bg-green-500' : 'bg-red-500'"></div>
+					<span class="text-sm text-gray-600">{{
+						connected ? 'Conectado' : 'Desconectado'
+					}}</span>
 				</div>
 			</div>
 
 			<!-- Messages Container -->
-			<div class="messages-container">
+			<div class="flex-1 overflow-hidden flex flex-col min-h-0">
 				<div
 					*ngIf="messages.length === 0"
-					class="empty-state">
-					<div class="empty-icon">💬</div>
-					<p>No hay mensajes aún</p>
-					<small>Envía un mensaje para comenzar la conversación</small>
+					class="flex-1 flex flex-col items-center justify-center text-gray-500">
+					<div class="text-6xl mb-4 opacity-50">💬</div>
+					<p class="text-lg">No hay mensajes aún</p>
+					<small class="text-sm">Envía un mensaje para comenzar la conversación</small>
 				</div>
 
-				<div class="messages-list">
-					<div
-						*ngFor="let m of messages; trackBy: trackByIndex"
-						class="message-wrapper">
+				<div
+					class="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-3 flex flex-col-reverse"
+					style="-webkit-overflow-scrolling: touch;">
+					<div *ngFor="let m of messages; trackBy: trackByIndex">
 						<!-- Text Message -->
 						<div
 							*ngIf="isTextMessage(m)"
-							class="message text-message">
-							<div class="message-content">
-								<div class="message-text">{{ getMessageText(m) }}</div>
-								<div class="message-time">
+							class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 sm:p-4">
+							<div
+								class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-2">
+								<div class="text-gray-900 text-sm sm:text-base break-words flex-1">
+									{{ getMessageText(m) }}
+								</div>
+								<div class="text-xs text-gray-500 whitespace-nowrap">
 									{{ formatTime(m.payload?.receivedAt || m.payload?.ts) }}
 								</div>
 							</div>
@@ -119,64 +52,64 @@ import { Subscription } from 'rxjs'
 						<!-- File Message -->
 						<div
 							*ngIf="isFileMessage(m)"
-							class="message file-message">
-							<div class="file-header">
-								<span class="file-type-icon">{{ getFileIcon(m.payload?.fileType) }}</span>
-								<span class="file-label">
+							class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 sm:p-4">
+							<div class="flex items-center gap-2 mb-3 text-sm text-gray-600">
+								<span class="text-lg">{{ getFileIcon(m.payload?.fileType) }}</span>
+								<span class="font-medium">
 									{{ isImage(m.payload?.fileType) ? 'Imagen' : 'Archivo' }}
 								</span>
-								<span class="message-time">{{ formatTime(m.payload?.receivedAt) }}</span>
+								<span class="text-xs ml-auto">{{
+									formatTime(m.payload?.receivedAt)
+								}}</span>
 							</div>
 
-							<div class="file-content">
-								<div class="file-preview-section">
+							<div class="flex flex-col sm:flex-row gap-3">
+								<!-- File Preview -->
+								<div class="flex justify-center sm:justify-start flex-shrink-0">
 									<div
 										*ngIf="isImage(m.payload?.fileType); else fileIconDisplay"
-										class="image-thumbnail">
+										class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-transform">
 										<img
 											[src]="getImageDataUrl(m.payload)"
 											[alt]="m.payload?.fileName"
 											(click)="viewImage(m.payload)"
-											class="thumbnail-image" />
+											class="w-full h-full object-cover" />
 									</div>
 									<ng-template #fileIconDisplay>
-										<div class="file-icon-display">
-											<span class="file-type-icon large">{{
-												getFileIcon(m.payload?.fileType)
-											}}</span>
+										<div
+											class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+											<span class="text-2xl">{{ getFileIcon(m.payload?.fileType) }}</span>
 										</div>
 									</ng-template>
 								</div>
 
-								<div class="file-info">
-									<div class="file-name-section">
-										<span class="file-name-main">{{
-											getFileNameWithoutExtension(m.payload?.fileName)
-										}}</span>
-										<span class="file-extension"
-											>.{{ getFileExtension(m.payload?.fileName) }}</span
-										>
+								<!-- File Info -->
+								<div class="flex-1 min-w-0">
+									<div class="flex items-center gap-2 mb-2">
+										<span class="font-medium text-gray-900 truncate">
+											{{ getFileNameWithoutExtension(m.payload?.fileName) }}
+										</span>
+										<span
+											class="bg-blue-500 text-white px-2 py-0.5 rounded-full text-xs font-medium">
+											.{{ getFileExtension(m.payload?.fileName) }}
+										</span>
 									</div>
 
-									<div class="file-meta">
-										<span class="file-size">{{
-											formatFileSize(m.payload?.fileSize)
-										}}</span>
-										<span class="file-type">{{
-											getFileTypeDisplay(m.payload?.fileType)
-										}}</span>
+									<div class="flex gap-4 mb-3 text-xs text-gray-600">
+										<span>{{ formatFileSize(m.payload?.fileSize) }}</span>
+										<span>{{ getFileTypeDisplay(m.payload?.fileType) }}</span>
 									</div>
 
-									<div class="file-actions">
+									<div class="flex flex-wrap gap-2">
 										<button
 											(click)="downloadFile(m.payload)"
-											class="action-button download">
+											class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm font-medium transition-colors">
 											↓ Descargar
 										</button>
 										<button
 											*ngIf="isImage(m.payload?.fileType)"
 											(click)="viewImage(m.payload)"
-											class="action-button view">
+											class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-medium transition-colors">
 											👁 Ver
 										</button>
 									</div>
@@ -187,509 +120,110 @@ import { Subscription } from 'rxjs'
 				</div>
 			</div>
 
-			<!-- Controls -->
-			<div class="controls">
-				<button
-					(click)="disconnect()"
-					class="disconnect-button">
-					Desconectar
-				</button>
+			<!-- Input Section -->
+			<div class="bg-white border-t border-gray-200 p-4 sm:p-6 flex-shrink-0 space-y-4">
+				<!-- Text Message Input -->
+				<div class="flex gap-2">
+					<input
+						[(ngModel)]="outMsg"
+						placeholder="Escribe tu mensaje..."
+						class="flex-1 px-4 py-2.5 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
+						(keydown.enter)="send()" />
+					<button
+						(click)="send()"
+						[disabled]="!outMsg.trim()"
+						class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-full flex items-center justify-center transition-all hover:scale-105 disabled:hover:scale-100">
+						<span class="text-lg font-bold">→</span>
+					</button>
+				</div>
+
+				<!-- File Input -->
+				<div class="flex flex-wrap items-center gap-2">
+					<input
+						type="file"
+						#fileInput
+						(change)="onFileSelected($event)"
+						class="hidden"
+						id="file-input" />
+					<label
+						for="file-input"
+						class="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer text-sm text-gray-700 transition-colors">
+						<span class="text-lg">📎</span>
+						<span class="hidden sm:inline">Adjuntar archivo</span>
+					</label>
+					<button
+						*ngIf="selectedFile"
+						(click)="sendFile()"
+						class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+						Enviar archivo
+					</button>
+					<button
+						(click)="disconnect()"
+						class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors ml-auto">
+						Desconectar
+					</button>
+				</div>
+
+				<!-- File Preview -->
+				<div
+					*ngIf="selectedFile"
+					class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+					<div class="flex items-center gap-4">
+						<div class="flex-shrink-0">
+							<div
+								*ngIf="isImage(selectedFile.type); else fileIconTemplate"
+								class="w-12 h-12 rounded-lg overflow-hidden">
+								<img
+									[src]="getSelectedFilePreview()"
+									[alt]="selectedFile.name"
+									class="w-full h-full object-cover" />
+							</div>
+							<ng-template #fileIconTemplate>
+								<div
+									class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+									<span class="text-xl">{{ getFileIcon(selectedFile.type) }}</span>
+								</div>
+							</ng-template>
+						</div>
+						<div class="flex-1 min-w-0">
+							<div class="font-medium text-gray-900 truncate">
+								{{ selectedFile.name }}
+							</div>
+							<div class="text-sm text-gray-600">
+								{{ formatFileSize(selectedFile.size) }} •
+								{{ getFileTypeDisplay(selectedFile.type) }}
+							</div>
+						</div>
+						<button
+							(click)="clearSelectedFile()"
+							class="w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-sm transition-colors">
+							×
+						</button>
+					</div>
+				</div>
 			</div>
 		</div>
 
 		<!-- Image Modal -->
 		<div
 			*ngIf="modalImageUrl"
-			class="image-modal"
+			class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 backdrop-blur-sm"
 			(click)="closeModal()">
-			<div class="modal-content">
+			<div class="relative max-w-[90vw] max-h-[90vh]">
 				<img
 					[src]="modalImageUrl"
 					[alt]="modalImageName"
-					(click)="$event.stopPropagation()" />
+					(click)="$event.stopPropagation()"
+					class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" />
 				<button
 					(click)="closeModal()"
-					class="close-modal">
+					class="absolute -top-10 -right-10 w-8 h-8 bg-white hover:bg-gray-100 rounded-full flex items-center justify-center text-gray-800 transition-colors">
 					×
 				</button>
 			</div>
 		</div>
 	`,
-	styles: [
-		`
-			.chat-container {
-				max-width: 800px;
-				margin: 0 auto;
-				height: 100vh;
-				display: flex;
-				flex-direction: column;
-				background: #f8f9fa;
-				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-			}
-
-			.header {
-				background: white;
-				padding: 1rem 1.5rem;
-				border-bottom: 1px solid #e9ecef;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-			}
-
-			.title {
-				margin: 0;
-				color: #2c3e50;
-				font-size: 1.5rem;
-				font-weight: 600;
-			}
-
-			.status {
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-			}
-
-			.status-dot {
-				width: 8px;
-				height: 8px;
-				border-radius: 50%;
-				transition: background-color 0.3s ease;
-			}
-
-			.status-dot.connected {
-				background-color: #28a745;
-			}
-
-			.status-dot.disconnected {
-				background-color: #dc3545;
-			}
-
-			.status-text {
-				font-size: 0.875rem;
-				color: #6c757d;
-				font-weight: 500;
-			}
-
-			.input-section {
-				background: white;
-				padding: 1rem 1.5rem;
-				border-bottom: 1px solid #e9ecef;
-			}
-
-			.message-input-container {
-				display: flex;
-				gap: 0.5rem;
-				margin-bottom: 1rem;
-			}
-
-			.message-input {
-				flex: 1;
-				padding: 0.75rem 1rem;
-				border: 1px solid #dee2e6;
-				border-radius: 24px;
-				font-size: 0.95rem;
-				outline: none;
-				transition: border-color 0.2s ease;
-			}
-
-			.message-input:focus {
-				border-color: #007bff;
-			}
-
-			.send-button {
-				width: 48px;
-				height: 48px;
-				border-radius: 50%;
-				border: none;
-				background: #007bff;
-				color: white;
-				cursor: pointer;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				transition: all 0.2s ease;
-			}
-
-			.send-button:hover:not(:disabled) {
-				background: #0056b3;
-				transform: translateY(-1px);
-			}
-
-			.send-button:disabled {
-				background: #6c757d;
-				cursor: not-allowed;
-			}
-
-			.send-icon {
-				font-size: 1.2rem;
-				font-weight: bold;
-			}
-
-			.file-input-container {
-				display: flex;
-				align-items: center;
-				gap: 1rem;
-			}
-
-			.file-input {
-				display: none;
-			}
-
-			.file-input-label {
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-				padding: 0.5rem 1rem;
-				border: 1px solid #dee2e6;
-				border-radius: 8px;
-				cursor: pointer;
-				transition: all 0.2s ease;
-				font-size: 0.875rem;
-				color: #6c757d;
-			}
-
-			.file-input-label:hover {
-				background: #f8f9fa;
-				border-color: #adb5bd;
-			}
-
-			.file-icon {
-				font-size: 1rem;
-			}
-
-			.send-file-button {
-				padding: 0.5rem 1rem;
-				background: #28a745;
-				color: white;
-				border: none;
-				border-radius: 8px;
-				cursor: pointer;
-				font-size: 0.875rem;
-				font-weight: 500;
-				transition: all 0.2s ease;
-			}
-
-			.send-file-button:hover {
-				background: #218838;
-			}
-
-			.file-preview {
-				margin-top: 1rem;
-				padding: 1rem;
-				background: #f8f9fa;
-				border-radius: 8px;
-				border: 1px solid #dee2e6;
-			}
-
-			.file-preview-content {
-				display: flex;
-				align-items: center;
-				gap: 1rem;
-			}
-
-			.file-preview-icon .preview-image {
-				width: 48px;
-				height: 48px;
-				border-radius: 6px;
-				overflow: hidden;
-			}
-
-			.file-preview-icon .preview-image img {
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
-			}
-
-			.file-type-icon {
-				font-size: 2rem;
-			}
-
-			.file-preview-info {
-				flex: 1;
-			}
-
-			.file-name {
-				font-weight: 500;
-				color: #2c3e50;
-				font-size: 0.9rem;
-			}
-
-			.file-details {
-				font-size: 0.8rem;
-				color: #6c757d;
-				margin-top: 0.25rem;
-			}
-
-			.clear-file-button {
-				width: 24px;
-				height: 24px;
-				border-radius: 50%;
-				border: none;
-				background: #dc3545;
-				color: white;
-				cursor: pointer;
-				font-size: 1rem;
-				line-height: 1;
-			}
-
-			.messages-container {
-				flex: 1;
-				overflow: hidden;
-				display: flex;
-				flex-direction: column;
-			}
-
-			.empty-state {
-				flex: 1;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				color: #6c757d;
-				text-align: center;
-			}
-
-			.empty-icon {
-				font-size: 3rem;
-				margin-bottom: 1rem;
-				opacity: 0.5;
-			}
-
-			.messages-list {
-				flex: 1;
-				overflow-y: auto;
-				padding: 1rem 1.5rem;
-				display: flex;
-				flex-direction: column-reverse;
-			}
-
-			.message-wrapper {
-				margin-bottom: 1rem;
-			}
-
-			.message {
-				background: white;
-				border-radius: 12px;
-				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-				overflow: hidden;
-			}
-
-			.text-message {
-				padding: 1rem 1.25rem;
-			}
-
-			.message-content {
-				display: flex;
-				justify-content: space-between;
-				align-items: flex-end;
-				gap: 1rem;
-			}
-
-			.message-text {
-				color: #2c3e50;
-				font-size: 0.95rem;
-				line-height: 1.4;
-			}
-
-			.message-time {
-				font-size: 0.75rem;
-				color: #6c757d;
-				white-space: nowrap;
-			}
-
-			.file-message {
-				padding: 1rem 1.25rem;
-			}
-
-			.file-header {
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-				margin-bottom: 0.75rem;
-				color: #6c757d;
-				font-size: 0.875rem;
-			}
-
-			.file-label {
-				font-weight: 500;
-			}
-
-			.file-content {
-				display: flex;
-				gap: 1rem;
-			}
-
-			.file-preview-section {
-				flex-shrink: 0;
-			}
-
-			.image-thumbnail {
-				width: 80px;
-				height: 80px;
-				border-radius: 8px;
-				overflow: hidden;
-				cursor: pointer;
-				transition: transform 0.2s ease;
-			}
-
-			.image-thumbnail:hover {
-				transform: scale(1.05);
-			}
-
-			.thumbnail-image {
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
-			}
-
-			.file-icon-display {
-				width: 60px;
-				height: 60px;
-				background: #f8f9fa;
-				border-radius: 8px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-
-			.file-type-icon.large {
-				font-size: 1.5rem;
-			}
-
-			.file-info {
-				flex: 1;
-				min-width: 0;
-			}
-
-			.file-name-section {
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-				margin-bottom: 0.5rem;
-			}
-
-			.file-name-main {
-				font-weight: 500;
-				color: #2c3e50;
-				word-break: break-word;
-			}
-
-			.file-extension {
-				background: #007bff;
-				color: white;
-				padding: 0.125rem 0.5rem;
-				border-radius: 12px;
-				font-size: 0.75rem;
-				font-weight: 500;
-			}
-
-			.file-meta {
-				display: flex;
-				gap: 1rem;
-				margin-bottom: 0.75rem;
-				font-size: 0.8rem;
-				color: #6c757d;
-			}
-
-			.file-actions {
-				display: flex;
-				gap: 0.5rem;
-			}
-
-			.action-button {
-				padding: 0.375rem 0.75rem;
-				border: none;
-				border-radius: 6px;
-				font-size: 0.8rem;
-				font-weight: 500;
-				cursor: pointer;
-				transition: all 0.2s ease;
-			}
-
-			.action-button.download {
-				background: #28a745;
-				color: white;
-			}
-
-			.action-button.download:hover {
-				background: #218838;
-			}
-
-			.action-button.view {
-				background: #17a2b8;
-				color: white;
-			}
-
-			.action-button.view:hover {
-				background: #138496;
-			}
-
-			.controls {
-				padding: 1rem 1.5rem;
-				background: white;
-				border-top: 1px solid #e9ecef;
-			}
-
-			.disconnect-button {
-				padding: 0.5rem 1rem;
-				background: #dc3545;
-				color: white;
-				border: none;
-				border-radius: 6px;
-				cursor: pointer;
-				font-size: 0.875rem;
-				font-weight: 500;
-			}
-
-			.disconnect-button:hover {
-				background: #c82333;
-			}
-
-			.image-modal {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background: rgba(0, 0, 0, 0.9);
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				z-index: 1000;
-				backdrop-filter: blur(4px);
-			}
-
-			.modal-content {
-				position: relative;
-				max-width: 90vw;
-				max-height: 90vh;
-			}
-
-			.modal-content img {
-				max-width: 100%;
-				max-height: 100%;
-				object-fit: contain;
-				border-radius: 8px;
-				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-			}
-
-			.close-modal {
-				position: absolute;
-				top: -40px;
-				right: -40px;
-				width: 32px;
-				height: 32px;
-				border-radius: 50%;
-				border: none;
-				background: white;
-				cursor: pointer;
-				font-size: 1.2rem;
-				line-height: 1;
-				color: #2c3e50;
-			}
-		`,
-	],
+	styles: [],
 })
 export class WsDemoComponent implements OnInit, OnDestroy {
 	messages: WSMessage[] = []
