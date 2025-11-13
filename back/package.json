@@ -1,9 +1,9 @@
 {
   "name": "spa-ws-backend",
   "version": "1.0.0",
-  "main": "server-ws.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server-ws.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "ws": "^8.13.0"
