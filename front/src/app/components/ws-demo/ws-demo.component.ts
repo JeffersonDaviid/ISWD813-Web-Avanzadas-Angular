@@ -56,7 +56,15 @@ import { Subscription } from 'rxjs'
 							<div class="flex items-center gap-2 mb-3 text-sm text-gray-600">
 								<span class="text-lg">{{ getFileIcon(m.payload?.fileType) }}</span>
 								<span class="font-medium">
-									{{ isImage(m.payload?.fileType) ? 'Imagen' : 'Archivo' }}
+									{{
+										isImage(m.payload?.fileType)
+											? 'Imagen'
+											: isVideo(m.payload?.fileType)
+											? 'Video'
+											: isAudio(m.payload?.fileType)
+											? 'Audio'
+											: 'Archivo'
+									}}
 								</span>
 								<span class="text-xs ml-auto">{{
 									formatTime(m.payload?.receivedAt)
@@ -67,7 +75,7 @@ import { Subscription } from 'rxjs'
 								<!-- File Preview -->
 								<div class="flex justify-center sm:justify-start flex-shrink-0">
 									<div
-										*ngIf="isImage(m.payload?.fileType); else fileIconDisplay"
+										*ngIf="isImage(m.payload?.fileType)"
 										class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-transform">
 										<img
 											[src]="getImageDataUrl(m.payload)"
@@ -75,12 +83,30 @@ import { Subscription } from 'rxjs'
 											(click)="viewImage(m.payload)"
 											class="w-full h-full object-cover" />
 									</div>
-									<ng-template #fileIconDisplay>
-										<div
-											class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-											<span class="text-2xl">{{ getFileIcon(m.payload?.fileType) }}</span>
-										</div>
-									</ng-template>
+									<div
+										*ngIf="isVideo(m.payload?.fileType) && !isImage(m.payload?.fileType)"
+										class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-transform">
+										<video
+											[src]="getVideoDataUrl(m.payload)"
+											(click)="viewVideo(m.payload)"
+											class="w-full h-full object-cover"
+											muted></video>
+									</div>
+									<div
+										*ngIf="
+											!isImage(m.payload?.fileType) &&
+											!isVideo(m.payload?.fileType) &&
+											!isAudio(m.payload?.fileType)
+										"
+										class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+										<span class="text-2xl">{{ getFileIcon(m.payload?.fileType) }}</span>
+									</div>
+									<div
+										*ngIf="isAudio(m.payload?.fileType)"
+										class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-orange-400 to-pink-400 rounded-lg flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
+										(click)="playAudio(m.payload)">
+										<span class="text-white text-2xl">🎵</span>
+									</div>
 								</div>
 
 								<!-- File Info -->
@@ -111,6 +137,18 @@ import { Subscription } from 'rxjs'
 											(click)="viewImage(m.payload)"
 											class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-medium transition-colors">
 											👁 Ver
+										</button>
+										<button
+											*ngIf="isVideo(m.payload?.fileType)"
+											(click)="viewVideo(m.payload)"
+											class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-md text-sm font-medium transition-colors">
+											🎬 Ver Video
+										</button>
+										<button
+											*ngIf="isAudio(m.payload?.fileType)"
+											(click)="playAudio(m.payload)"
+											class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-md text-sm font-medium transition-colors">
+											🎵 Reproducir
 										</button>
 									</div>
 								</div>
@@ -171,19 +209,39 @@ import { Subscription } from 'rxjs'
 					<div class="flex items-center gap-4">
 						<div class="flex-shrink-0">
 							<div
-								*ngIf="isImage(selectedFile.type); else fileIconTemplate"
+								*ngIf="isImage(selectedFile.type)"
 								class="w-12 h-12 rounded-lg overflow-hidden">
 								<img
 									[src]="getSelectedFilePreview()"
 									[alt]="selectedFile.name"
 									class="w-full h-full object-cover" />
 							</div>
-							<ng-template #fileIconTemplate>
-								<div
-									class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-									<span class="text-xl">{{ getFileIcon(selectedFile.type) }}</span>
-								</div>
-							</ng-template>
+							<div
+								*ngIf="isVideo(selectedFile.type) && !isImage(selectedFile.type)"
+								class="w-12 h-12 rounded-lg overflow-hidden">
+								<video
+									[src]="getSelectedFilePreview()"
+									class="w-full h-full object-cover"
+									muted></video>
+							</div>
+							<div
+								*ngIf="
+									isAudio(selectedFile.type) &&
+									!isImage(selectedFile.type) &&
+									!isVideo(selectedFile.type)
+								"
+								class="w-12 h-12 bg-gradient-to-r from-orange-400 to-pink-400 rounded-lg flex items-center justify-center">
+								<span class="text-white text-xl">🎵</span>
+							</div>
+							<div
+								*ngIf="
+									!isImage(selectedFile.type) &&
+									!isVideo(selectedFile.type) &&
+									!isAudio(selectedFile.type)
+								"
+								class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+								<span class="text-xl">{{ getFileIcon(selectedFile.type) }}</span>
+							</div>
 						</div>
 						<div class="flex-1 min-w-0">
 							<div class="font-medium text-gray-900 truncate">
@@ -222,6 +280,62 @@ import { Subscription } from 'rxjs'
 				</button>
 			</div>
 		</div>
+
+		<!-- Video Modal -->
+		<div
+			*ngIf="modalVideoUrl"
+			class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 backdrop-blur-sm"
+			(click)="closeModal()">
+			<div class="relative max-w-[90vw] max-h-[90vh]">
+				<video
+					[src]="modalVideoUrl"
+					(click)="$event.stopPropagation()"
+					class="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+					controls
+					autoplay>
+					Tu navegador no soporta el elemento video.
+				</video>
+				<button
+					(click)="closeModal()"
+					class="absolute -top-10 -right-10 w-8 h-8 bg-white hover:bg-gray-100 rounded-full flex items-center justify-center text-gray-800 transition-colors">
+					×
+				</button>
+				<div class="absolute -bottom-8 left-0 text-white text-sm opacity-75">
+					{{ modalVideoName }}
+				</div>
+			</div>
+		</div>
+
+		<!-- Audio Modal -->
+		<div
+			*ngIf="modalAudioUrl"
+			class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 backdrop-blur-sm"
+			(click)="closeModal()">
+			<div class="relative bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
+				<div class="text-center mb-6">
+					<div
+						class="w-20 h-20 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full flex items-center justify-center mx-auto mb-4">
+						<span class="text-white text-3xl">🎵</span>
+					</div>
+					<h3 class="text-lg font-semibold text-gray-900 truncate">
+						{{ modalAudioName }}
+					</h3>
+				</div>
+				<audio
+					[src]="modalAudioUrl"
+					(click)="$event.stopPropagation()"
+					class="w-full"
+					controls
+					autoplay>
+					Tu navegador no soporta el elemento de audio.
+				</audio>
+				<button
+					(click)="closeModal()"
+					class="absolute -top-2 -right-2 w-8 h-8 bg-gray-500 hover:bg-gray-600 text-white rounded-full flex items-center justify-center text-lg transition-colors">
+					×
+				</button>
+			</div>
+		</div>
 	`,
 	styles: [],
 })
@@ -233,6 +347,10 @@ export class WsDemoComponent implements OnInit, OnDestroy {
 	selectedFilePreviewUrl: string = ''
 	modalImageUrl: string = ''
 	modalImageName: string = ''
+	modalVideoUrl: string = ''
+	modalVideoName: string = ''
+	modalAudioUrl: string = ''
+	modalAudioName: string = ''
 	private subMsg?: Subscription
 	private subStatus?: Subscription
 
@@ -270,8 +388,8 @@ export class WsDemoComponent implements OnInit, OnDestroy {
 		if (file) {
 			this.selectedFile = file
 
-			// Generate preview URL for images
-			if (this.isImage(file.type)) {
+			// Generate preview URL for images, videos and audio
+			if (this.isImage(file.type) || this.isVideo(file.type) || this.isAudio(file.type)) {
 				const reader = new FileReader()
 				reader.onload = (e) => {
 					this.selectedFilePreviewUrl = e.target?.result as string
@@ -365,10 +483,20 @@ export class WsDemoComponent implements OnInit, OnDestroy {
 		window.URL.revokeObjectURL(url)
 	}
 
-	// Image handling methods
+	// Image, Video and Audio handling methods
 	isImage(fileType: string): boolean {
 		if (!fileType) return false
 		return fileType.startsWith('image/')
+	}
+
+	isVideo(fileType: string): boolean {
+		if (!fileType) return false
+		return fileType.startsWith('video/')
+	}
+
+	isAudio(fileType: string): boolean {
+		if (!fileType) return false
+		return fileType.startsWith('audio/')
 	}
 
 	getImageDataUrl(filePayload: any): string {
@@ -383,9 +511,37 @@ export class WsDemoComponent implements OnInit, OnDestroy {
 		this.modalImageName = filePayload.fileName || 'Imagen'
 	}
 
+	getVideoDataUrl(filePayload: any): string {
+		if (!filePayload?.fileData || !filePayload?.fileType) return ''
+		return `data:${filePayload.fileType};base64,${filePayload.fileData}`
+	}
+
+	viewVideo(filePayload: any) {
+		if (!this.isVideo(filePayload?.fileType)) return
+
+		this.modalVideoUrl = this.getVideoDataUrl(filePayload)
+		this.modalVideoName = filePayload.fileName || 'Video'
+	}
+
+	getAudioDataUrl(filePayload: any): string {
+		if (!filePayload?.fileData || !filePayload?.fileType) return ''
+		return `data:${filePayload.fileType};base64,${filePayload.fileData}`
+	}
+
+	playAudio(filePayload: any) {
+		if (!this.isAudio(filePayload?.fileType)) return
+
+		this.modalAudioUrl = this.getAudioDataUrl(filePayload)
+		this.modalAudioName = filePayload.fileName || 'Audio'
+	}
+
 	closeModal() {
 		this.modalImageUrl = ''
 		this.modalImageName = ''
+		this.modalVideoUrl = ''
+		this.modalVideoName = ''
+		this.modalAudioUrl = ''
+		this.modalAudioName = ''
 	}
 
 	// File type icon and display methods
