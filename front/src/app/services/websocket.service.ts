@@ -20,7 +20,7 @@ export interface WSStats {
 	providedIn: 'root',
 })
 export class WebsocketService implements OnDestroy {
-	private WS_URL = 'wss://chatwss.onrender.com'
+	private WS_URL = 'ws://localhost:8080'
 	private socket$?: WebSocketSubject<WSMessage>
 	private connectionStatus$ = new Subject<boolean>()
 	private incoming$ = new Subject<WSMessage>()

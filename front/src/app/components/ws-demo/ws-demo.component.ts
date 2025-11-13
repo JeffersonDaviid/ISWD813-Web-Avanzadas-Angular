@@ -51,10 +51,9 @@ import { Subscription } from 'rxjs'
 					<div
 						class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 text-center">
 						<div class="text-2xl font-bold text-purple-600 mb-1">
-							{{ stats.totalConnections }}
+							{{ stats.totalConnections - stats.activeConnections }}
 						</div>
-						<div class="text-sm text-gray-600">Total de Conexiones</div>
-						<div class="text-xs text-gray-500 mt-1">👥 Histórico total</div>
+						<div class="text-sm text-gray-600">🔴 Personas Desconectadas</div>
 					</div>
 				</div>
 			</div>
