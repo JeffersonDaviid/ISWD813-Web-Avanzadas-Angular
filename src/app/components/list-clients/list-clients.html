@@ -1,8 +1,8 @@
 <div class="p-6 bg-gray-50 min-h-screen">
   <!-- Encabezado -->
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-800">Gestión de Clientes</h1>
-    <p class="text-gray-600 mt-2">Administra la información de tus clientes</p>
+    <h1 class="text-3xl font-bold text-gray-800">Gestión de Tipo de Productos</h1>
+    <p class="text-gray-600 mt-2">Administra la información de tus tipos de productos</p>
   </div>
 
   <!-- Tarjeta de lista -->
@@ -13,7 +13,7 @@
         <div>
           <p class="text-lg font-semibold text-gray-800">Lista de clientes</p>
           <p class="text-sm text-gray-500 mt-1">
-            Total: {{ clientesParsed().length }} cliente(s)
+            Total: {{ tipoProductosParsed().length }} cliente(s)
           </p>
         </div>
         <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
@@ -28,24 +28,22 @@
 
     <!-- Lista de clientes -->
     <div class="overflow-x-auto">
-      @if (clientesParsed().length > 0) {
+      @if (tipoProductosParsed().length > 0) {
       <table class="w-full">
         <thead class="bg-gray-100">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cédula</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nombre Completo
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Id</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">tipo
             </th>
-            <th class="px6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Email</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          @for (cliente of clientesParsed(); track cliente.id) {
+          @for (tipo of tipoProductosParsed(); track tipo.id) {
           <tr class="hover:bg-gray-50 transition duration-150">
             <!-- Cédula -->
             <td class="px-6 py-4">
               <div class="font-mono text-sm font-semibold text-gray-900 bg-gray-100 px-3 py-1 rounded-lg inline-block">
-                {{ cliente.cedula }}
+                {{ tipo.id }}
               </div>
             </td>
 
@@ -53,30 +51,18 @@
             <td class="px-6 py-4">
               <div class="flex flex-col">
                 <span class="font-medium text-gray-900">
-                  {{ cliente.nombres }} {{ cliente.apellidos }}
+                  {{ tipo.tipo }}
                 </span>
-                <span class="text-xs text-gray-500 mt-1">ID: {{ cliente.id }}</span>
+                <span class="text-xs text-gray-500 mt-1">ID: {{ tipo.id }}</span>
               </div>
             </td>
 
-            <!-- Email -->
-            <td class="px-6 py-4">
-              <div class="flex items-center">
-                <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <a href="mailto:{{ cliente.email }}" class="text-blue-600 hover:text-blue-800 hover:underline">
-                  {{ cliente.email }}
-                </a>
-              </div>
-            </td>
 
             <!-- Acciones -->
             <td class="px-6 py-4">
               <div class="flex items-center space-x-2">
                 <!-- Botón Editar -->
-                <button (click)="editClient(cliente.id)" class="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 
+                <button (click)="editClient(tipo.id)" class="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 
                              transition duration-200 flex items-center gap-2 text-sm font-medium">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -86,7 +72,7 @@
                 </button>
 
                 <!-- Botón Eliminar -->
-                <button (click)="deleteCliente(cliente.cedula)" class="px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 
+                <button (click)="deleteCliente(tipo.id)" class="px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 
                              transition duration-200 flex items-center gap-2 text-sm font-medium">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -99,13 +85,13 @@
           </tr>
 
           <!-- Modal de Edición -->
-          @if(openModal() === `update-client-${cliente.id}`) {
+          @if(openModal() === `update-client-${tipo.id}`) {
           <tr>
             <td colspan="4" class="px-6 py-4">
               <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 animate-fade-in">
                 <div class="flex justify-between items-center mb-4">
                   <h3 class="text-lg font-semibold text-gray-800">
-                    Editando: {{ cliente.nombres }} {{ cliente.apellidos }}
+                    Editando: {{ tipo.tipo }}
                   </h3>
                   <button (click)="cancelEdit('')" class="text-gray-500 hover:text-gray-700">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,7 +99,7 @@
                     </svg>
                   </button>
                 </div>
-                <app-update-client [client]="cliente" (cancel)="cancelEdit($event)" />
+                <app-update-client [client]="tipo" (cancel)="cancelEdit($event)" />
               </div>
             </td>
           </tr>
@@ -144,9 +130,9 @@
 
 </div>
 
-@if(openModal() === 'post-client') {
+<!-- @if(openModal() === 'post-client') {
 <app-post-client (cancel)="cancelEdit($event)" />
-}
+} -->
 
 <!-- Animación CSS personalizada -->
 <style>

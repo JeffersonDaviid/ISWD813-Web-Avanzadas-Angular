@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ClienteSoapService } from '../../service/soap';
+import { TipoProductoSoapService } from '../../service/tipo-producto-soap';
 
 @Component({
   selector: 'app-post-client',
@@ -8,7 +8,7 @@ import { ClienteSoapService } from '../../service/soap';
   templateUrl: './post-client.html',
 })
 export class PostClient {
-  protected clienteSoap = inject(ClienteSoapService);
+  protected clienteSoap = inject(TipoProductoSoapService);
 
   fb = inject(FormBuilder);
   formCliente: FormGroup;
@@ -16,22 +16,17 @@ export class PostClient {
   constructor() {
     this.formCliente = this.fb.group({
       id: [''],
-      nombres: [''],
-      apellidos: [''],
-      email: [''],
-      cedula: [''],
+      tipo: [''],
     });
   }
 
   insertarCliente() {
-    const { id, nombres, apellidos, email, cedula } = this.formCliente.value;
-    this.clienteSoap
-      .insertarCliente(id, nombres, apellidos, email, cedula)
-      .subscribe((resp: any) => {
-        console.log('Respuesta SOAP: ', resp);
-      });
+    const { id, tipo } = this.formCliente.value;
+    this.clienteSoap.insertarTipoProducto(id, tipo).subscribe((resp: any) => {
+      console.log('Respuesta SOAP: ', resp);
+    });
 
-    console.log('form enviado: ', id, nombres, apellidos, email, cedula);
+    console.log('form enviado: ', id, tipo);
   }
 
   @Output() cancel = new EventEmitter<string>();

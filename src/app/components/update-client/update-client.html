@@ -1,18 +1,9 @@
-<p>update-client works!</p>
-
-
 <form [formGroup]="formUpdate" (ngSubmit)="updateCliente()">
-  <label for="cedula">Cédula:</label>
-  <input id="cedula" formControlName="cedula" />
+  <label for="id">Id:</label>
+  <input id="id" formControlName="id" />
 
-  <label for="nombres">Nombres:</label>
-  <input id="nombres" formControlName="nombres" />
-
-  <label for="apellidos">Apellidos:</label>
-  <input id="apellidos" formControlName="apellidos" />
-
-  <label for="email">Email:</label>
-  <input id="email" formControlName="email" />
+  <label for="tipo">Tipo:</label>
+  <input id="tipo" formControlName="tipo" />
 
   <button type="submit">Actualizar Cliente</button>
   <button type="button" (click)="cancelUpdate()">Cancelar</button>

@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
-import { Cliente } from '../../models/Cliente';
-import { ClienteSoapService } from '../../service/soap';
 import { UpdateClient } from '../update-client/update-client';
 import { PostClient } from '../post-client/post-client';
+import { TipoProductoSoapService } from '../../service/tipo-producto-soap';
+import { TipoProducto } from '../../models/Producto';
 
 @Component({
   selector: 'app-list-clients',
@@ -10,14 +10,14 @@ import { PostClient } from '../post-client/post-client';
   templateUrl: './list-clients.html',
 })
 export class ListClients {
-  protected clienteSoap = inject(ClienteSoapService);
+  protected tipoProductoSoap = inject(TipoProductoSoapService);
 
-  clientesParsed = signal<Cliente[]>([]);
+  tipoProductosParsed = signal<TipoProducto[]>([]);
 
   openModal = signal('');
 
   ngOnInit(): void {
-    this.clienteSoap.listarClientes().subscribe((resp: any) => {
+    this.tipoProductoSoap.listarTipoProductos().subscribe((resp: any) => {
       this.parserXML(resp);
     });
   }
@@ -26,45 +26,37 @@ export class ListClients {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xml, 'text/xml');
 
-    // Namespace del modelo
-    const ns = 'http://schemas.datacontract.org/2004/07/ServicioClientesSOA.Models';
+    const ns = 'http://schemas.datacontract.org/2004/07/ServicioProductoSOA.Models';
 
-    const clientes = xmlDoc.getElementsByTagNameNS(ns, 'Cliente');
+    // OJO: el nodo es TipoProducto, no Cliente
+    const tipoProductos = xmlDoc.getElementsByTagNameNS(ns, 'TipoProducto');
 
-    const lista: Cliente[] = [];
+    const lista: TipoProducto[] = [];
 
-    for (let i = 0; i < clientes.length; i++) {
-      const cliente = clientes[i];
+    for (let i = 0; i < tipoProductos.length; i++) {
+      const tp = tipoProductos[i];
 
-      const id = cliente.getElementsByTagNameNS(ns, 'Id')[0]?.textContent;
-      const nombres = cliente.getElementsByTagNameNS(ns, 'Nombres')[0]?.textContent;
-      const apellidos = cliente.getElementsByTagNameNS(ns, 'Apellidos')[0]?.textContent;
-      const email = cliente.getElementsByTagNameNS(ns, 'Email')[0]?.textContent;
-      const cedula = cliente.getElementsByTagNameNS(ns, 'Cedula')[0]?.textContent;
+      const id = Number(tp.getElementsByTagNameNS(ns, 'Id')[0]?.textContent ?? 0);
 
-      lista.push({
-        id,
-        nombres,
-        apellidos,
-        email,
-        cedula,
-      });
+      const tipo = tp.getElementsByTagNameNS(ns, 'Tipo')[0]?.textContent ?? '';
+
+      lista.push({ id, tipo });
     }
 
-    this.clientesParsed.set(lista);
+    this.tipoProductosParsed.set(lista);
   }
 
-  deleteCliente(cedula: string) {
-    this.clienteSoap.eliminarCliente(cedula).subscribe((resp: any) => {
+  deleteCliente(id: number) {
+    this.tipoProductoSoap.eliminarTipoProducto(id).subscribe((resp: any) => {
       console.log('Respuesta SOAP: ', resp);
       // Refrescar la lista de clientes después de eliminar
-      this.clienteSoap.listarClientes().subscribe((resp: any) => {
+      this.tipoProductoSoap.listarTipoProductos().subscribe((resp: any) => {
         this.parserXML(resp);
       });
     });
   }
 
-  editClient(id: string) {
+  editClient(id: number) {
     this.openModal.set(`update-client-${id}`);
   }
 

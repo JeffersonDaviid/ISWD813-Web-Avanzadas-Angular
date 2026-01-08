@@ -5,24 +5,24 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class ClienteSoapService {
-  private url = 'http://localhost:5281/ClienteService.svc';
+export class TipoProductoSoapService {
+  private url = 'http://localhost:5055/TipoProductoService.svc';
   private http = inject(HttpClient);
 
-  listarClientes(): Observable<string> {
+  listarTipoProductos(): Observable<string> {
     const soapBody = `
       <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                         xmlns:tem="http://tempuri.org/">
         <soapenv:Header/>
         <soapenv:Body>
-          <tem:ListarClientes/>
+          <tem:ListarTipoProductos/>
         </soapenv:Body>
       </soapenv:Envelope>
     `;
 
     const headers = new HttpHeaders({
       'Content-Type': 'text/xml; charset=utf-8',
-      SOAPAction: 'http://tempuri.org/IClienteService/ListarClientes',
+      SOAPAction: 'http://tempuri.org/ITipoProductoService/ListarTipoProductos',
     });
 
     return this.http.post(this.url, soapBody, {
@@ -31,21 +31,21 @@ export class ClienteSoapService {
     });
   }
 
-  buscarCliente(id: string): Observable<string> {
+  buscarTipoProducto(id: number): Observable<string> {
     const soapBody = `
           <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                             xmlns:tem="http://tempuri.org/">
             <soapenv:Header/>
             <soapenv:Body>
-              <tem:BuscarCliente>
-                <tem:cedula>${id}</tem:cedula>
-              </tem:BuscarCliente>
+              <tem:BuscarTipoProducto>
+                <tem:id>${id}</tem:id>
+              </tem:BuscarTipoProducto>
             </soapenv:Body>
           </soapenv:Envelope>
   `;
     const headers = new HttpHeaders({
       'Content-Type': 'text/xml; charset=utf-8',
-      SOAPAction: 'http://tempuri.org/IClienteService/BuscarCliente',
+      SOAPAction: 'http://tempuri.org/ITipoProductoService/BuscarTipoProducto',
     });
 
     return this.http.post(this.url, soapBody, {
@@ -54,34 +54,25 @@ export class ClienteSoapService {
     });
   }
 
-  insertarCliente(
-    id: string,
-    nombres: string,
-    apellidos: string,
-    email: string,
-    cedula: string
-  ): Observable<string> {
+  insertarTipoProducto(id: number, tipo: string): Observable<string> {
     const soapBody = `
           <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                             xmlns:tem="http://tempuri.org/"
-                            xmlns:ser="http://schemas.datacontract.org/2004/07/ServicioClientesSOA.Models">
+                            xmlns:ser="http://schemas.datacontract.org/2004/07/ServicioProductoSOA.Models">
             <soapenv:Header/>
             <soapenv:Body>
-              <tem:InsertarCliente>
+              <tem:InsertarTipoProducto>
                 <tem:cliente>
                   <ser:Id>${id}</ser:Id>
-                  <ser:Nombres>${nombres}</ser:Nombres>
-                  <ser:Apellidos>${apellidos}</ser:Apellidos>
-                  <ser:Email>${email}</ser:Email>
-                  <ser:Cedula>${cedula}</ser:Cedula>
+                  <ser:Tipo>${tipo}</ser:Tipo>
                 </tem:cliente>
-              </tem:InsertarCliente>
+              </tem:InsertarTipoProducto>
             </soapenv:Body>
           </soapenv:Envelope>
   `;
     const headers = new HttpHeaders({
       'Content-Type': 'text/xml; charset=utf-8',
-      SOAPAction: 'http://tempuri.org/IClienteService/InsertarCliente',
+      SOAPAction: 'http://tempuri.org/ITipoProductoService/InsertarTipoProducto',
     });
 
     return this.http.post(this.url, soapBody, {
@@ -90,34 +81,25 @@ export class ClienteSoapService {
     });
   }
 
-  actualizarCliente(
-    id: string,
-    nombres: string,
-    apellidos: string,
-    email: string,
-    cedula: string
-  ): Observable<string> {
+  actualizarTipoProducto(id: number, tipo: string): Observable<string> {
     const soapBody = `
           <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                             xmlns:tem="http://tempuri.org/"
-                            xmlns:ser="http://schemas.datacontract.org/2004/07/ServicioClientesSOA.Models">
+                            xmlns:ser="http://schemas.datacontract.org/2004/07/ServicioProductoSOA.Models">
             <soapenv:Header/>
             <soapenv:Body>
-              <tem:ActualizarCliente>
+              <tem:ActualizarProducto>
                 <tem:cliente>
                   <ser:Id>${id}</ser:Id>
-                  <ser:Nombres>${nombres}</ser:Nombres>
-                  <ser:Apellidos>${apellidos}</ser:Apellidos>
-                  <ser:Email>${email}</ser:Email>
-                  <ser:Cedula>${cedula}</ser:Cedula>
+                  <ser:Tipo>${tipo}</ser:Tipo>
                 </tem:cliente>
-              </tem:ActualizarCliente>
+              </tem:ActualizarProducto>
             </soapenv:Body>
           </soapenv:Envelope>
   `;
     const headers = new HttpHeaders({
       'Content-Type': 'text/xml; charset=utf-8',
-      SOAPAction: 'http://tempuri.org/IClienteService/ActualizarCliente',
+      SOAPAction: 'http://tempuri.org/ITipoProductoService/ActualizarTipoProducto',
     });
     return this.http.post(this.url, soapBody, {
       headers,
@@ -125,21 +107,21 @@ export class ClienteSoapService {
     });
   }
 
-  eliminarCliente(cedula: string): Observable<string> {
+  eliminarTipoProducto(id: number): Observable<string> {
     const soapBody = `
           <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                             xmlns:tem="http://tempuri.org/">
             <soapenv:Header/>
             <soapenv:Body>
-              <tem:EliminarCliente>
-                <tem:cedula>${cedula}</tem:cedula>
-              </tem:EliminarCliente>
+              <tem:EliminarProducto >
+                <tem:id>${id}</tem:id>
+              </tem:EliminarProducto>
             </soapenv:Body>
           </soapenv:Envelope>
   `;
     const headers = new HttpHeaders({
       'Content-Type': 'text/xml; charset=utf-8',
-      SOAPAction: 'http://tempuri.org/IClienteService/EliminarCliente',
+      SOAPAction: 'http://tempuri.org/ITipoProductoService/EliminarTipoProducto',
     });
 
     return this.http.post(this.url, soapBody, {
