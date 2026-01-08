@@ -1,12 +1,12 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { ClienteSoapService } from './service/soap';
+import { PostClient } from './components/post-client/post-client';
+import { ListClients } from './components/list-clients/list-clients';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
+  imports: [PostClient, ListClients],
 })
-export class App {
-  protected readonly title = signal('appClientServiceSOA');
-}
+export class App {}
