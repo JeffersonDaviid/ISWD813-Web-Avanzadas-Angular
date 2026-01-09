@@ -1,7 +1,7 @@
 <div class="p-6 bg-gray-50">
   <!-- Encabezado -->
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-800">Gestión de Tipo de Productos</h1>
+    <h1 class="text-3xl font-bold text-gray-800">Gestión de Productos</h1>
     <p class="text-gray-600 mt-2">Administra la información de tus tipos de productos</p>
   </div>
 
@@ -11,9 +11,9 @@
     <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
       <div class="flex justify-between items-center">
         <div>
-          <p class="text-lg font-semibold text-gray-800">Lista de tipo de productos</p>
+          <p class="text-lg font-semibold text-gray-800">Lista de productos</p>
           <p class="text-sm text-gray-500 mt-1">
-            Total: {{ tipoProductosParsed().length }} Tipo de producto(s)
+            Total: {{ productosParsed().length }} Producto(s)
           </p>
         </div>
         <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
@@ -26,41 +26,63 @@
       </div>
     </div>
 
-    <!-- Lista de tipo de productos -->
+    <!-- Lista de productos -->
     <div class="overflow-x-auto">
-      @if (tipoProductosParsed().length > 0) {
+      @if (productosParsed().length > 0) {
       <table class="w-full">
         <thead class="bg-gray-100">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Id</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">tipo
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Id Tipo</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Descripción
             </th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Valor</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Costo</th>
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          @for (tipo of tipoProductosParsed(); track tipo.id) {
+          @for (producto of productosParsed(); track producto.id) {
           <tr class="hover:bg-gray-50 transition duration-150">
-            <!-- Cédula -->
             <td class="px-6 py-4">
               <div class="font-mono text-sm font-semibold text-gray-900 bg-gray-100 px-3 py-1 rounded-lg inline-block">
-                {{ tipo.id }}
+                {{ producto.id }}
               </div>
             </td>
 
             <!-- Nombre -->
             <td class="px-6 py-4">
               <div class="flex flex-col">
-                {{ tipo.tipo }}
+                {{ producto.id_tipo }}
               </div>
             </td>
 
+            <!-- Descripción -->
+            <td class="px-6 py-4">
+              <div class="flex flex-col">
+                {{ producto.descripcion }}
+              </div>
+            </td>
+
+            <!-- Valor -->
+            <td class="px-6 py-4">
+              <div class="flex flex-col">
+                {{ producto.valor }}
+              </div>
+            </td>
+
+            <!-- Costo -->
+            <td class="px-6 py-4">
+              <div class="flex flex-col">
+                {{ producto.costo }}
+              </div>
+            </td>
 
             <!-- Acciones -->
             <td class="px-6 py-4">
               <div class="flex items-center space-x-2">
                 <!-- Botón Editar -->
-                <button (click)="editClient(tipo.id)" class="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 
+                <button (click)="editClient(producto.id)" class="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 
                              transition duration-200 flex items-center gap-2 text-sm font-medium">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -70,7 +92,7 @@
                 </button>
 
                 <!-- Botón Eliminar -->
-                <button (click)="deleteCliente(tipo.id)" class="px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 
+                <button (click)="deleteCliente(producto.id)" class="px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 
                              transition duration-200 flex items-center gap-2 text-sm font-medium">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -83,13 +105,13 @@
           </tr>
 
           <!-- Modal de Edición -->
-          @if(openModal() === `update-client-${tipo.id}`) {
+          @if(openModal() === `update-client-${producto.id}`) {
           <tr>
             <td colspan="4" class="px-6 py-4">
               <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 animate-fade-in">
                 <div class="flex justify-between items-center mb-4">
                   <h3 class="text-lg font-semibold text-gray-800">
-                    Editando: {{ tipo.tipo }}
+                    Editando: {{ producto.id_tipo }}
                   </h3>
                   <button (click)="cancelEdit('')" class="text-gray-500 hover:text-gray-700">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,7 +119,7 @@
                     </svg>
                   </button>
                 </div>
-                <app-update-client [client]="tipo" (cancel)="cancelEdit($event)" />
+                <app-update-product [client]="producto" (cancel)="cancelEdit($event)" />
               </div>
             </td>
           </tr>
@@ -128,8 +150,8 @@
 
 </div>
 
-@if(openModal() === 'post-client') {
-<app-post-client (cancel)="cancelEdit($event)" />
+@if(openModal() === 'post-product') {
+<app-post-product (cancel)="cancelEdit($event)" />
 }
 
 <!-- Animación CSS personalizada -->

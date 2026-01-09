@@ -1,0 +1,193 @@
+<!-- Modal Overlay -->
+<div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+  <!-- Modal Container -->
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-slide-up">
+
+    <!-- Modal Header -->
+    <div class="sticky top-0 bg-white border-b border-gray-200 px-8 py-6 rounded-t-2xl">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-800">Nuevo Producto</h2>
+          <p class="text-gray-600 mt-1">Completa los datos para registrar un nuevo producto</p>
+        </div>
+        <button type="button" (click)="cancelInsert()"
+          class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full p-2 transition duration-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <form [formGroup]="formProducto" (ngSubmit)="insertarProducto()" class="px-8 py-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- ID -->
+        <div class="space-y-2">
+          <label for="id" class="block text-sm font-medium text-gray-700">
+            ID del Producto
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+              </svg>
+            </div>
+            <input id="id" formControlName="id" type="number" placeholder="Ej: CLI-001" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 
+                     focus:ring-blue-500 focus:border-blue-500 transition duration-200
+                     placeholder:text-gray-400" />
+          </div>
+          @if (formProducto.get('id')?.invalid && formProducto.get('id')?.touched) {
+          <p class="text-sm text-red-600">El ID es requerido</p>
+          }
+        </div>
+
+        <!-- Tipo -->
+        <div class="space-y-2">
+          <label for="id_tipo" class="block text-sm font-medium text-gray-700">
+            Id Producto
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <input id="id_tipo" formControlName="id_tipo" type="text" placeholder="Ej: 1" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 
+                     focus:ring-blue-500 focus:border-blue-500 transition duration-200
+                     placeholder:text-gray-400" />
+          </div>
+          @if (formProducto.get('id_tipo')?.invalid && formProducto.get('id_tipo')?.touched) {
+          <p class="text-sm text-red-600">El tipo es requerido</p>
+          }
+        </div>
+
+
+        <!-- Descripción -->
+        <div class="space-y-2">
+          <label for="descripcion" class="block text-sm font-medium text-gray-700">
+            Descripción del Producto
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 16h8M8 12h8m-6 8h6a2 2 0 002-2v-4a2 2 0 00-2-2h-6l-2 2v4a2 2 0 002 2zM6 20h.01M6 16h.01M6 12h.01M6 8h.01M6 4h.01" />
+              </svg>
+            </div>
+            <input id="descripcion" formControlName="descripcion" type="text" placeholder="Ej: Leche entera" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 
+                     focus:ring-blue-500 focus:border-blue-500 transition duration-200
+                     placeholder:text-gray-400" />
+          </div>
+          @if (formProducto.get('descripcion')?.invalid && formProducto.get('descripcion')?.touched) {
+          <p class="text-sm text-red-600">La descripción es requerida</p>
+          }
+
+        </div>
+
+        <!-- Valor -->
+        <div class="space-y-2">
+          <label for="valor" class="block text-sm font-medium text-gray-700">
+            Valor del Producto
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 8v4m0 4h.01M12 18h.01" />
+              </svg>
+            </div>
+            <input id="valor" formControlName="valor" type="number" placeholder="Ej: 2500" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 
+                     focus:ring-blue-500 focus:border-blue-500 transition duration-200
+                     placeholder:text-gray-400" />
+          </div>
+          @if (formProducto.get('valor')?.invalid && formProducto.get('valor')?.touched) {
+          <p class="text-sm text-red-600">El valor es requerido</p>
+          }
+        </div>
+
+
+        <!-- Costo -->
+        <div class="space-y-2">
+          <label for="costo" class="block text-sm font-medium text-gray-700">
+            Costo del Producto
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 8v4m0 4h.01M12 18h.01" />
+              </svg>
+            </div>
+            <input id="costo" formControlName="costo" type="number" placeholder="Ej: 2000" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 
+                     focus:ring-blue-500 focus:border-blue-500 transition duration-200
+                     placeholder:text-gray-400" />
+          </div>
+          @if (formProducto.get('costo')?.invalid && formProducto.get('costo')?.touched) {
+          <p class="text-sm text-red-600">El costo es requerido</p>
+          }
+        </div>
+
+
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end space-x-4">
+        <button type="button" (click)="cancelInsert()" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 
+                 hover:border-gray-400 transition duration-200 font-medium">
+          Cancelar
+        </button>
+        <button type="submit" [disabled]="formProducto.invalid" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg 
+                 hover:from-blue-700 hover:to-indigo-700 transition duration-200 font-medium
+                 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Agregar
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- Animaciones CSS -->
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+</style>

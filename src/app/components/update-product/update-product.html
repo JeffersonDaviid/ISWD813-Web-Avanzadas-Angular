@@ -1,0 +1,19 @@
+<form [formGroup]="formUpdate" (ngSubmit)="updateProducto()">
+  <label for="id">Id:</label>
+  <input id="id" formControlName="id" />
+
+  <label for="id_tipo">Tipo:</label>
+  <input id="id_tipo" formControlName="id_tipo" />
+
+  <label for="descripcion">Descripción:</label>
+  <input id="descripcion" formControlName="descripcion" />
+
+  <label for="valor">Valor:</label>
+  <input id="valor" formControlName="valor" />
+
+  <label for="costo">Costo:</label>
+  <input id="costo" formControlName="costo" />
+
+  <button type="submit">Actualizar</button>
+  <button type="button" (click)="cancelUpdate()">Cancelar</button>
+</form>
