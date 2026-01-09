@@ -20,5 +20,5 @@ public interface IProductoService
     void ActualizarProducto(Producto producto);
 
     [OperationContract]
-    void EliminarProdcuto(int id);
+    void EliminarProducto(int id);
 }

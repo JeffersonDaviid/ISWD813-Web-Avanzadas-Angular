@@ -46,7 +46,7 @@ public class ProductoService : IProductoService
         _context.SaveChanges();
     }
 
-    public void EliminarProdcuto(int id)
+    public void EliminarProducto(int id)
     {
         var producto = _context.Productos.First(c => c.Id == id);
         if (producto != null)

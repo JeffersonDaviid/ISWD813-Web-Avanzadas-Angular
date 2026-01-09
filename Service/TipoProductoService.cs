@@ -41,7 +41,7 @@ public class TipoProductoService : ITipoProductoService
         _context.SaveChanges();
     }
 
-    public void EliminarProdcuto(int id)
+    public void EliminarTipoProducto(int id)
     {
         var tipoProducto = _context.TipoProductos.First(c => c.Id == id);
         if (tipoProducto != null)
