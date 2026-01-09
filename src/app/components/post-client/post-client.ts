@@ -15,18 +15,22 @@ export class PostClient {
 
   constructor() {
     this.formCliente = this.fb.group({
-      id: [''],
+      id: [0],
       tipo: [''],
     });
   }
 
   insertarCliente() {
     const { id, tipo } = this.formCliente.value;
-    this.clienteSoap.insertarTipoProducto(id, tipo).subscribe((resp: any) => {
-      console.log('Respuesta SOAP: ', resp);
+    this.clienteSoap.insertarTipoProducto(id, tipo).subscribe({
+      next: (resp: any) => {
+        console.log('Respuesta SOAP: ', resp);
+        this.cancel.emit('');
+      },
+      error: (err: any) => {
+        console.error('Error SOAP: ', err);
+      },
     });
-
-    console.log('form enviado: ', id, tipo);
   }
 
   @Output() cancel = new EventEmitter<string>();

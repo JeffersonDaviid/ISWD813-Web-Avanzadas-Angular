@@ -26,8 +26,14 @@ export class UpdateClient implements OnInit {
     const { id, tipo } = this.formUpdate.value;
     console.log('form update enviado: ', id, tipo);
     // Aquí puedes llamar al servicio SOAP para actualizar el cliente
-    this.clienteService.actualizarTipoProducto(id, tipo).subscribe((resp: any) => {
-      console.log('Respuesta SOAP de actualización: ', resp);
+    this.clienteService.actualizarTipoProducto(id, tipo).subscribe({
+      next: (resp: any) => {
+        console.log('Respuesta SOAP: ', resp);
+        this.cancel.emit('');
+      },
+      error: (err: any) => {
+        console.error('Error SOAP: ', err);
+      },
     });
   }
   @Output() cancel = new EventEmitter<string>();

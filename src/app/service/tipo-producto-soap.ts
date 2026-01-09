@@ -62,10 +62,10 @@ export class TipoProductoSoapService {
             <soapenv:Header/>
             <soapenv:Body>
               <tem:InsertarTipoProducto>
-                <tem:cliente>
+                <tem:tipoProducto>
                   <ser:Id>${id}</ser:Id>
                   <ser:Tipo>${tipo}</ser:Tipo>
-                </tem:cliente>
+                </tem:tipoProducto>
               </tem:InsertarTipoProducto>
             </soapenv:Body>
           </soapenv:Envelope>
@@ -89,17 +89,17 @@ export class TipoProductoSoapService {
             <soapenv:Header/>
             <soapenv:Body>
               <tem:ActualizarProducto>
-                <tem:cliente>
+                <tem:tipoProducto>
                   <ser:Id>${id}</ser:Id>
                   <ser:Tipo>${tipo}</ser:Tipo>
-                </tem:cliente>
+                </tem:tipoProducto>
               </tem:ActualizarProducto>
             </soapenv:Body>
           </soapenv:Envelope>
   `;
     const headers = new HttpHeaders({
       'Content-Type': 'text/xml; charset=utf-8',
-      SOAPAction: 'http://tempuri.org/ITipoProductoService/ActualizarTipoProducto',
+      SOAPAction: 'http://tempuri.org/ITipoProductoService/ActualizarProducto',
     });
     return this.http.post(this.url, soapBody, {
       headers,
@@ -113,9 +113,9 @@ export class TipoProductoSoapService {
                             xmlns:tem="http://tempuri.org/">
             <soapenv:Header/>
             <soapenv:Body>
-              <tem:EliminarProducto >
+              <tem:EliminarTipoProducto>
                 <tem:id>${id}</tem:id>
-              </tem:EliminarProducto>
+              </tem:EliminarTipoProducto>
             </soapenv:Body>
           </soapenv:Envelope>
   `;

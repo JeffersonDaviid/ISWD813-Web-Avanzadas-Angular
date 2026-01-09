@@ -11,9 +11,9 @@
     <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
       <div class="flex justify-between items-center">
         <div>
-          <p class="text-lg font-semibold text-gray-800">Lista de clientes</p>
+          <p class="text-lg font-semibold text-gray-800">Lista de tipo de productos</p>
           <p class="text-sm text-gray-500 mt-1">
-            Total: {{ tipoProductosParsed().length }} cliente(s)
+            Total: {{ tipoProductosParsed().length }} Tipo de producto(s)
           </p>
         </div>
         <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
@@ -21,12 +21,12 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          Nuevo Cliente
+          Nuevo Tipo
         </button>
       </div>
     </div>
 
-    <!-- Lista de clientes -->
+    <!-- Lista de tipo de productos -->
     <div class="overflow-x-auto">
       @if (tipoProductosParsed().length > 0) {
       <table class="w-full">
@@ -35,6 +35,7 @@
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Id</th>
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">tipo
             </th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -130,9 +131,9 @@
 
 </div>
 
-<!-- @if(openModal() === 'post-client') {
+@if(openModal() === 'post-client') {
 <app-post-client (cancel)="cancelEdit($event)" />
-} -->
+}
 
 <!-- Animación CSS personalizada -->
 <style>
