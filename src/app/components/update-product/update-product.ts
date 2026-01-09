@@ -19,7 +19,7 @@ export class UpdateProduct {
   ngOnInit() {
     this.formUpdate = this.fb.group({
       id: [this.client().id],
-      tipo: [this.client().id_tipo],
+      id_tipo: [this.client().id_tipo],
       descripcion: [this.client().descripcion],
       valor: [this.client().valor],
       costo: [this.client().costo],
@@ -27,10 +27,10 @@ export class UpdateProduct {
   }
 
   updateProducto() {
-    const { id, tipo, descripcion, valor, costo } = this.formUpdate.value;
-    console.log('form update enviado: ', id, tipo, descripcion, valor, costo);
+    const { id, id_tipo, descripcion, valor, costo } = this.formUpdate.value;
+    console.log('form update enviado: ', id, id_tipo, descripcion, valor, costo);
     // Aquí puedes llamar al servicio SOAP para actualizar el producto
-    this.productoService.actualizarProducto(id, tipo, descripcion, valor, costo).subscribe({
+    this.productoService.actualizarProducto(id, id_tipo, descripcion, valor, costo).subscribe({
       next: (resp: any) => {
         console.log('Respuesta SOAP: ', resp);
         this.cancel.emit('');

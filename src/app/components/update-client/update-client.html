@@ -1,10 +1,51 @@
-<form [formGroup]="formUpdate" (ngSubmit)="updateCliente()">
-  <label for="id">Id:</label>
-  <input id="id" formControlName="id" />
+<form [formGroup]="formUpdate" (ngSubmit)="updateCliente()"
+  class="bg-white rounded-lg shadow-lg border border-gray-200 max-w-sm mx-auto overflow-hidden">
 
-  <label for="tipo">Tipo:</label>
-  <input id="tipo" formControlName="tipo" />
+  <!-- HEADER -->
+  <div class="px-5 py-3 bg-indigo-50 border-b flex justify-between items-center">
+    <h3 class="text-sm font-semibold text-indigo-700">
+      Editar Tipo
+    </h3>
 
-  <button type="submit">Actualizar</button>
-  <button type="button" (click)="cancelUpdate()">Cancelar</button>
+    <button type="button" (click)="cancelUpdate()" class="text-indigo-400 hover:text-indigo-600 transition">
+      ✕
+    </button>
+  </div>
+
+  <!-- BODY -->
+  <div class="p-5 space-y-4">
+
+    <!-- ID -->
+    <div>
+      <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide">
+        ID
+      </label>
+      <input formControlName="id" readonly
+        class="mt-1 w-full rounded-md bg-gray-100 border border-gray-200 px-3 py-2 text-sm text-gray-500" />
+    </div>
+
+    <!-- Tipo -->
+    <div>
+      <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide">
+        Tipo
+      </label>
+      <input formControlName="tipo" class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+               focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Tipo de cliente" />
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="px-5 py-3 bg-gray-50 border-t flex justify-end gap-2">
+    <button type="button" (click)="cancelUpdate()"
+      class="px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100">
+      Cancelar
+    </button>
+
+    <button type="submit" [disabled]="formUpdate.invalid"
+      class="px-4 py-1.5 text-sm rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50">
+      Actualizar
+    </button>
+  </div>
+
 </form>

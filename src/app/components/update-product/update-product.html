@@ -1,19 +1,79 @@
-<form [formGroup]="formUpdate" (ngSubmit)="updateProducto()">
-  <label for="id">Id:</label>
-  <input id="id" formControlName="id" />
+<form [formGroup]="formUpdate" (ngSubmit)="updateProducto()"
+  class="relative bg-white max-w-xl rounded-xl shadow-lg border border-gray-200 overflow-hidden">
 
-  <label for="id_tipo">Tipo:</label>
-  <input id="id_tipo" formControlName="id_tipo" />
+  <!-- HEADER -->
+  <div class="px-6 py-4 bg-indigo-50 border-b flex items-center justify-between">
+    <h2 class="text-base font-semibold text-indigo-700">
+      Editar producto
+    </h2>
 
-  <label for="descripcion">Descripción:</label>
-  <input id="descripcion" formControlName="descripcion" />
+    <button type="button" (click)="cancelUpdate()" class="text-indigo-400 hover:text-indigo-600 transition">
+      ✕
+    </button>
+  </div>
 
-  <label for="valor">Valor:</label>
-  <input id="valor" formControlName="valor" />
+  <!-- BODY -->
+  <div class="p-6 space-y-4">
 
-  <label for="costo">Costo:</label>
-  <input id="costo" formControlName="costo" />
+    <!-- ID -->
+    <div>
+      <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+        ID
+      </label>
+      <input formControlName="id" readonly
+        class="mt-1 w-full rounded-md bg-gray-100 border border-gray-200 px-3 py-2 text-sm text-gray-500" />
+    </div>
 
-  <button type="submit">Actualizar</button>
-  <button type="button" (click)="cancelUpdate()">Cancelar</button>
+    <!-- Tipo -->
+    <div>
+      <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+        Tipo
+      </label>
+      <input formControlName="id_tipo"
+        class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+    </div>
+
+    <!-- Descripción -->
+    <div>
+      <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+        Descripción
+      </label>
+      <textarea rows="2" formControlName="descripcion"
+        class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+    </div>
+
+    <!-- Valor / Costo -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+          Valor
+        </label>
+        <input type="number" formControlName="valor"
+          class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+      </div>
+
+      <div>
+        <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+          Costo
+        </label>
+        <input type="number" formControlName="costo"
+          class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="px-6 py-4 bg-gray-50 border-t flex justify-end gap-3">
+    <button type="button" (click)="cancelUpdate()"
+      class="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+      Cancelar
+    </button>
+
+    <button type="submit" [disabled]="formUpdate.invalid"
+      class="px-5 py-2 text-sm rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition disabled:opacity-50">
+      Guardar cambios
+    </button>
+  </div>
+
 </form>

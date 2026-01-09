@@ -21,7 +21,7 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          Nuevo Tipo
+          Nuevo Producto
         </button>
       </div>
     </div>
@@ -67,14 +67,14 @@
             <!-- Valor -->
             <td class="px-6 py-4">
               <div class="flex flex-col">
-                {{ producto.valor }}
+                {{ producto.valor | currency }}
               </div>
             </td>
 
             <!-- Costo -->
             <td class="px-6 py-4">
               <div class="flex flex-col">
-                {{ producto.costo }}
+                {{ producto.costo | currency }}
               </div>
             </td>
 
@@ -105,22 +105,10 @@
           </tr>
 
           <!-- Modal de Edición -->
-          @if(openModal() === `update-client-${producto.id}`) {
+          @if(openModal() === `update-product-${producto.id}`) {
           <tr>
-            <td colspan="4" class="px-6 py-4">
-              <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 animate-fade-in">
-                <div class="flex justify-between items-center mb-4">
-                  <h3 class="text-lg font-semibold text-gray-800">
-                    Editando: {{ producto.id_tipo }}
-                  </h3>
-                  <button (click)="cancelEdit('')" class="text-gray-500 hover:text-gray-700">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-                <app-update-product [client]="producto" (cancel)="cancelEdit($event)" />
-              </div>
+            <td colspan="7" class="px-6 py-4">
+              <app-update-product [client]="producto" (cancel)="cancelEdit($event)" />
             </td>
           </tr>
           }

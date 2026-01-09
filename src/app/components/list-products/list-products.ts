@@ -3,10 +3,11 @@ import { PostProduct } from '../post-product/post-product';
 import { ProductoSoapService } from '../../service/producto-soap';
 import { Producto } from '../../models/Producto';
 import { UpdateProduct } from '../update-product/update-product';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-list-products',
-  imports: [PostProduct, UpdateProduct],
+  imports: [PostProduct, UpdateProduct, CurrencyPipe],
   templateUrl: './list-products.html',
 })
 export class ListProducts {
@@ -59,7 +60,7 @@ export class ListProducts {
   }
 
   editClient(id: number) {
-    this.openModal.set(`update-client-${id}`);
+    this.openModal.set(`update-product-${id}`);
   }
 
   cancelEdit($event: string) {
