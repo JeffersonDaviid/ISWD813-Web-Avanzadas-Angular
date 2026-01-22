@@ -1,0 +1,7 @@
+@ApiGateway_HostAddress = https://localhost:7000
+@Token = TU_TOKEN_AQUI
+
+### Probar la ruta de Pedidos (Requiere Auth)
+GET {{ApiGateway_HostAddress}}/pedidos
+Authorization: Bearer {{Token}}
+Accept: application/json
