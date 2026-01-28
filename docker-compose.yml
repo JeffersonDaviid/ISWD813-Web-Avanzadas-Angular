@@ -1,0 +1,58 @@
+services:
+  consul:
+    image: consul:1.15.4
+    container_name: consul
+    hostname: consul
+    ports:
+      - "8500:8500" # UI y API
+    command: >
+      agent -dev -ui 
+      -client=0.0.0.0 
+      -bind=0.0.0.0
+      -datacenter=dc1
+      -domain=consul
+    networks:
+      - client-gateway-discover-api
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: ./ApiGateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    hostname: api-gateway
+    ports:
+      - "7000:8080" # HTTPS externo
+    depends_on:
+      - consul
+    networks:
+      - client-gateway-discover-api
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  producto-service:
+    build:
+      context: ./ServicioProducto
+      dockerfile: Dockerfile
+    container_name: producto-service
+    hostname: producto-service
+    ports:
+      - "5001:8081"
+    working_dir: /app
+    command: >
+      sh -c "dotnet restore && 
+             dotnet run --urls=http://+:8081"
+    depends_on:
+      - consul
+    networks:
+      - client-gateway-discover-api
+    restart: unless-stopped
+
+networks:
+  client-gateway-discover-api:
+    driver: bridge

@@ -1,0 +1,33 @@
+{
+  "Routes": [
+    {
+      "UseServiceDiscovery": true,
+      "DownstreamPathTemplate": "/api/vehiculos",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/vehiculos",
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
+      "ServiceName": "producto-service",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/cliente",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/cliente",
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
+      "ServiceName": "producto-service",
+      "UseServiceDiscovery": true,
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+    "ServiceDiscoveryProvider": {
+      "Host": "consul",
+      "Port": 8500,
+      "Type": "Consul"
+    }
+  }
+}
